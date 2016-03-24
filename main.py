@@ -103,8 +103,13 @@ def show_instance():
     token = session.get('token')
     if token != None:
         id_tenant_admin = get_tenant_id(token, hostname, keystone_port, 'admin')
-
         instances_list = get_server_list(id_tenant_admin, token, hostname, nova_port)
+#        grafana_url_list = []
+#        for vm_id in
+#            url_cpu = 'http://%s:3000/dashboard-solo/db/%s?panelId=1&fullscreen' % (ip_gra, vm_id)
+#            url_ram = 'http://%s:3000/dashboard-solo/db/%s?panelId=2&fullscreen' % (ip_gra, vm_id)
+#            url_net = 'http://%s:3000/dashboard-solo/db/%s?panelId=3&fullscreen' % (ip_gra, vm_id)
+
         return render_template("instances.html", instances_list=instances_list, 
                                 network_public_name=network_public_name)
     else:

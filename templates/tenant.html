@@ -18,13 +18,12 @@
   	<tr>
   	<td>{{ all_tenant_usage[row]['name'] }}</td>
  	<td>{{ all_tenant_usage[row]['tenant_usage']['instances']}}</td>
-	<td> {{ all_tenant_usage[row]['tenant_usage']['vcpus_used']}}</td>
+	<td>{{ all_tenant_usage[row]['tenant_usage']['vcpus_used']}}</td>
  	<td>{{ all_tenant_usage[row]['tenant_usage']['rams_used'] }}</td>
  	<td>{{ all_tenant_usage[row]['tenant_usage']['disks_used'] }}</td>
   	<td>{{ all_tenant_usage[row]['id'] }}</td>
   </tr>	
   
   {% endfor %}
-
-</div>
+  </div>
 {% endblock %}
