@@ -1,18 +1,20 @@
+#!/usr/bin/python
 
 from flask import Flask, session, render_template, url_for, redirect, request
 from flask.ext.bootstrap import Bootstrap
-
 from keystone_api import (get_token, get_tenant_id, get_tenant_list)
 from mail import (send_mail,reports)
 from neutron_api import (check_neutron_service, get_ports, get_network)
 from nova_api import (get_server_list, get_compute_list, get_compute_statistics, check_nova_service, get_tenant_usage)
 from cinder_api import (get_volumes_list)
-
 import os
+
+
 # default Variable
 username = None
 password = None
 tenant_name = 'admin'
+
 
 hostname = None
 error = None
@@ -23,12 +25,13 @@ ip_used = 0
 app = Flask(__name__)
 Bootstrap(app)
 
-# load config from file
 
+# load config from file
 app.config.from_pyfile('config.py')
 
 ## import config value
-
+keystone_hn = app.config['KEYSTONE_HN']
+keystone_sg = app.config['KEYSTONE_SG']
 keystone_port = app.config['KEYSTONE_PORT']
 nova_port = app.config['NOVA_PORT']
 neutron_port = app.config['NEUTRON_PORT']
@@ -42,15 +45,10 @@ mail_server_port = app.config['MAIL_SERVER_PORT']
 sender = app.config['SENDER']
 password_sender = app.config['PASSWORD_SENDER']
 
-#sender = os.environ.get('SENDER')
-#password_sender = os.environ.get('PASSWORD_SENDER')
-
 # config neutron
 network_public_name = app.config['NETWORK_PUBLIC_NAME']
-#network_public_name = os.environ.get('NETWORK_PUBLIC_NAME')
 
 ## login to UI use username, password and IP API 
-
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     global username
@@ -61,9 +59,13 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        hostname = request.form['hostname']
+        region = request.form['regions']
+
+        if region == "Hanoi":
+            hostname = keystone_hn
+        elif region == "Saigon":
+            hostname = keystone_sg
         token = get_token(tenant_name, username, password, hostname, keystone_port)
-        print token
         session['logged_in'] = True
         session['token'] = token
         return redirect(url_for("index"))
@@ -71,7 +73,6 @@ def login():
 
 
 ## logout
-
 @app.route("/logout")
 def logout():
     session.pop("logged_in", None)
@@ -79,7 +80,6 @@ def logout():
 
 
 ## show all service status  in openstack
-
 @app.route("/services")
 def services():
     if not session.get('logged_in'):
@@ -90,12 +90,10 @@ def services():
                                       hostname=hostname, keystone_port=keystone_port)
     neutron_agents = check_neutron_service(token=token, tenant_id=id_tenant_admin, username=username, password=password,
                                            hostname=hostname, keystone_port=keystone_port)
-    print nova_service
     return render_template("services.html", nova_service=nova_service, neutron_agents=neutron_agents)
 
 
 ###show all instance in openstack
-
 @app.route("/instances")
 def show_instance():
     if not session.get('logged_in'):
@@ -104,20 +102,11 @@ def show_instance():
     if token != None:
         id_tenant_admin = get_tenant_id(token, hostname, keystone_port, 'admin')
         instances_list = get_server_list(id_tenant_admin, token, hostname, nova_port)
-#        grafana_url_list = []
-#        for vm_id in
-#            url_cpu = 'http://%s:3000/dashboard-solo/db/%s?panelId=1&fullscreen' % (ip_gra, vm_id)
-#            url_ram = 'http://%s:3000/dashboard-solo/db/%s?panelId=2&fullscreen' % (ip_gra, vm_id)
-#            url_net = 'http://%s:3000/dashboard-solo/db/%s?panelId=3&fullscreen' % (ip_gra, vm_id)
-
         return render_template("instances.html", instances_list=instances_list, 
                                 network_public_name=network_public_name)
     else:
         error = 'Time Out'
         return redirect(url_for('login', error=error))
-
-
-        ## show resource usage all tenant
 
 
 @app.route("/tenant")
@@ -159,14 +148,13 @@ def tenant_usage():
             all_tenant_usage.append(tenant_usage.copy())
         return render_template("tenant.html", all_tenant_usage=all_tenant_usage)
     else:
-        error = 'Time Out'
-        return redirect(url_for('login', error=error))
-
+        #error = 'Time Out'
+        #return redirect(url_for('login', error=error))
+        return redirect(url_for('login'))
     return render_template("tenant.html")
 
 
 ## index show resource from total compute or each compute
-
 @app.route("/", methods=['GET','POST'])
 def index():
     all = True
@@ -216,7 +204,6 @@ def index():
                         ip_used = ip_used + 1
                 info['ip_used'] = ip_used
                 compute_list.append(info)
-                print compute_list
             return render_template("index.html", compute_list=compute_list, 
                                      total=False,alert =alert)
         else:

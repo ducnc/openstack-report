@@ -57,9 +57,9 @@
 function monitoring(instance_id,instance_name){
   console.log(instance_id);
   document.getElementById("nameModal").innerHTML="Monitoring "+instance_name;
-  document.getElementById('CPU').src="http://172.16.69.220:3000/dashboard-solo/db/"+instance_id+"?panelId=1&fullscreen";
-  document.getElementById('RAM').src="http://172.16.69.220:3000/dashboard-solo/db/"+instance_id+"?panelId=2&fullscreen";
-  document.getElementById('HDD').src="http://172.16.69.220:3000/dashboard-solo/db/"+instance_id+"?panelId=3&fullscreen";
+  document.getElementById('CPU').src="http://172.16.69.69:3000/dashboard/db/instances?var-uuid="+instance_id+"&panelId=1&fullscreen";
+  document.getElementById('RAM').src="http://172.16.69.69:3000/dashboard/db/instances?var-uuid="+instance_id+"&panelId=2&fullscreen";
+  document.getElementById('HDD').src="http://172.16.69.69:3000/dashboard/db/instances?var-uuid="+instance_id+"&panelId=3&fullscreen";
 }
 </script>
 {% endblock %}

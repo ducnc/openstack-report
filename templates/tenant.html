@@ -5,25 +5,33 @@
   <div class="panel-heading"><div>
   <h4> Resource tenant usage </h4>
   <!-- Table -->
-  <table class="table">
+  <table data-toggle="table" data-sort-name="stargazers_count" data-sort-order="desc">
+   <thead>
    <tr>
-    <th>Name</th>
-    <th>Instances</th> 
-    <th>VCPUs(cores)</th>
-    <th>RAMs(Mb)</th>
-    <th>Disks(Gb)</th>
-    <th>Tenant ID</th>
+    <th data-field="name" data-sortable="true">Name</th>
+    <th data-field="instances" data-sortable="true">Instances</th> 
+    <th data-field="vcpus_used" data-sortable="true">VCPUs(cores)</th>
+    <th data-field="rams_used" data-sortable="true">RAMs(Mb)</th>
+    <th data-field="disks_used" data-sortable="true">Disks(Gb)</th>
+    <th data-field="id" data-sortable="true">Tenant ID</th>
   </tr>
+  </thead>
   {% for row in range(all_tenant_usage|length) %}
-  	<tr>
+    <tr >
   	<td>{{ all_tenant_usage[row]['name'] }}</td>
  	<td>{{ all_tenant_usage[row]['tenant_usage']['instances']}}</td>
 	<td>{{ all_tenant_usage[row]['tenant_usage']['vcpus_used']}}</td>
  	<td>{{ all_tenant_usage[row]['tenant_usage']['rams_used'] }}</td>
  	<td>{{ all_tenant_usage[row]['tenant_usage']['disks_used'] }}</td>
   	<td>{{ all_tenant_usage[row]['id'] }}</td>
-  </tr>	
-  
+    </tr>
   {% endfor %}
-  </div>
+  </table>
+
+  <p>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+  </p>
+
+</div>
 {% endblock %}

@@ -11,7 +11,7 @@ from keystone_api import (get_endpoint)
 def check_neutron_service(token, tenant_id, hostname, keystone_port, username, password):
     neutron_endpoint = get_endpoint('admin', 'neutron', username, password, hostname, keystone_port)
     try:
-        neutron = neutron_client.Client('2.0', token=token, endpoint_url=neutron_endpoint)
+        neutron = neutron_client.Client('2.0', token=token, endpoint_url=neutron_endpoint, insecure=True)
     except neutron_exc.NeutronClientException as e:
         error = str(e)
     agents = neutron.list_agents()
